@@ -39,4 +39,54 @@ public class ClaimStatusTest {
 		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
 		assertTrue(response.getEntity().toString().contains("[Missing segment: ISA!]"));
 	}
+	
+	@Test
+	public void testClaimStatusWithInvalid276MissingIEASegment() {
+		ClaimStatus claimStatus = new ClaimStatus();
+		Response response = claimStatus.transmitClaimInquiry(msg276WithMissingIEASegment);
+		
+		assertNotNull(response);
+		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
+		assertTrue(response.getEntity().toString().contains("[Missmatched segment: ISA/IEA]"));
+	}
+	
+	@Test
+	public void testClaimStatusWithInvalid276MissingGSSegment() {
+		ClaimStatus claimStatus = new ClaimStatus();
+		Response response = claimStatus.transmitClaimInquiry(msg276WithMissingGSSegment);
+		
+		assertNotNull(response);
+		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
+		assertTrue(response.getEntity().toString().contains("[Missmatched segment: GS/GE]"));
+	}
+	
+	@Test
+	public void testClaimStatusWithInvalid276MissingGESegment() {
+		ClaimStatus claimStatus = new ClaimStatus();
+		Response response = claimStatus.transmitClaimInquiry(msg276WithMissingGESegment);
+		
+		assertNotNull(response);
+		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
+		assertTrue(response.getEntity().toString().contains("[Missmatched segment: GS/GE]"));
+	}
+	
+	@Test
+	public void testClaimStatusWithInvalid276MissingSTSegment() {
+		ClaimStatus claimStatus = new ClaimStatus();
+		Response response = claimStatus.transmitClaimInquiry(msg276WithMissingSTSegment);
+		
+		assertNotNull(response);
+		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
+		assertTrue(response.getEntity().toString().contains("[Missmatched segment: ST/SE]"));
+	}
+	
+	@Test
+	public void testClaimStatusWithInvalid276MissingSESegment() {
+		ClaimStatus claimStatus = new ClaimStatus();
+		Response response = claimStatus.transmitClaimInquiry(msg276WithMissingSESegment);
+		
+		assertNotNull(response);
+		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
+		assertTrue(response.getEntity().toString().contains("[Missmatched segment: ST/SE]"));
+	}
 }
