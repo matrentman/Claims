@@ -36,7 +36,9 @@ public class ClaimStatus {
 			System.out.println(claim.toString());
 			String payerCode = getPayerCode(claim);
 			String alveoPayerCode = lookupAlveoPayerCode(payerCode);
-			setPayerCode(claim, alveoPayerCode);
+			if (alveoPayerCode != null && !alveoPayerCode.isEmpty()) {
+				setPayerCode(claim, alveoPayerCode);
+			}
 			System.out.println(claim.toString());
 		}
 		catch (InvalidX12MessageException ixme) {
