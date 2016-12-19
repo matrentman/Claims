@@ -27,6 +27,7 @@ public class ClaimStatus {
 	@Produces("text/plain")
 	public Response transmitClaimInquiry(String claimText) throws JSONException 
 	{	
+		Response response = null;
 		X12Message claim = null;
 		try {
 			claim = new X12Message(claimText);
@@ -40,9 +41,13 @@ public class ClaimStatus {
 		}
 		catch (InvalidX12MessageException ixme) {
 			System.out.println(ixme.getMessage());
+			response = Response.status(422).entity(ixme.getMessage()).build();
 		}
 		
-		return Response.status(200).entity(claim.toString()).build();
+		if (response == null) {
+			response = Response.status(200).entity(claim.toString()).build();
+		}
+		return response;
 	}
 	
 	private String getPayerCode(X12Message claim) {
@@ -59,8 +64,6 @@ public class ClaimStatus {
 	
 	private String lookupAlveoPayerCode(String payerCode) {
 		String alveoPayerCode = null;
-		alveoPayerCode = "0211";
-		
 		
 		try {
 			URL url = new URL("http://192.0.0.71/ClaimStatusServices_Test/api/ClaimStatus/GetOutboundPayerCodeFromAlveoPayerCode/"+payerCode);
@@ -89,8 +92,7 @@ public class ClaimStatus {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		
+	
 		return alveoPayerCode;
 	}
 }
