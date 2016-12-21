@@ -26,12 +26,13 @@ public class ClaimStatus {
 	@POST
 	@Consumes("text/plain")
 	@Produces("text/plain")
-	public Response transmitClaimInquiry(String message276) throws JSONException 
+	public Response transmitClaimInquiry(String claimStatusInquiry) throws JSONException 
 	{	
 		Response response = null;
 		X12Message claimInquiry = null;
+		String claimStatusResponse = null;
 		try {
-			claimInquiry = new X12Message(message276);
+			claimInquiry = new X12Message(claimStatusInquiry);
 	
 			claimInquiry.validate();
 			System.out.println(claimInquiry.toString());
@@ -41,13 +42,22 @@ public class ClaimStatus {
 				setPayerCode(claimInquiry, alveoPayerCode);
 			}
 			System.out.println(claimInquiry.toString());
-		}
-		catch (InvalidX12MessageException ixme) {
+		} catch (InvalidX12MessageException ixme) {
 			System.out.println(ixme.getMessage());
 			response = Response.status(422).entity(ixme.getMessage()).build();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			response = Response.status(422).entity("Message could not be processed: " + e.getMessage()).build();
 		}
 		
-		String claimStatusResponse = postInquiryToEmdeon(claimInquiry.toString());
+		if (response == null) {
+			try {
+				claimStatusResponse = postInquiryToEmdeon(claimInquiry.toString());
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				response = Response.status(422).entity("Could not connect to Emdeon: " + e.getMessage()).build();
+			}
+		}
 		
 		if (response == null) {
 			response = Response.status(200).entity(claimStatusResponse.toString()).build();
