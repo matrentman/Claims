@@ -3,6 +3,7 @@ package com.mtlogic;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,42 +26,46 @@ public class ClaimStatus {
 	@POST
 	@Consumes("text/plain")
 	@Produces("text/plain")
-	public Response transmitClaimInquiry(String claimText) throws JSONException 
+	public Response transmitClaimInquiry(String message276) throws JSONException 
 	{	
 		Response response = null;
-		X12Message claim = null;
+		X12Message claimInquiry = null;
 		try {
-			claim = new X12Message(claimText);
+			claimInquiry = new X12Message(message276);
 	
-			claim.validate();
-			System.out.println(claim.toString());
-			String payerCode = getPayerCode(claim);
+			claimInquiry.validate();
+			System.out.println(claimInquiry.toString());
+			String payerCode = getPayerCode(claimInquiry);
 			String alveoPayerCode = lookupAlveoPayerCode(payerCode);
 			if (alveoPayerCode != null && !alveoPayerCode.isEmpty()) {
-				setPayerCode(claim, alveoPayerCode);
+				setPayerCode(claimInquiry, alveoPayerCode);
 			}
-			System.out.println(claim.toString());
+			System.out.println(claimInquiry.toString());
 		}
 		catch (InvalidX12MessageException ixme) {
 			System.out.println(ixme.getMessage());
 			response = Response.status(422).entity(ixme.getMessage()).build();
 		}
 		
+		String claimStatusResponse = postInquiryToEmdeon(claimInquiry.toString());
+		
 		if (response == null) {
-			response = Response.status(200).entity(claim.toString()).build();
+			response = Response.status(200).entity(claimStatusResponse.toString()).build();
 		}
 		return response;
 	}
 	
 	private String getPayerCode(X12Message claim) {
 		String payerCode = null;
-		X12Segment loop2100a = claim.getInterchangeControlList().get(0).getFunctionalGroupEnvelopes().get(0).getTransactionSetEnvelopes().get(0).getSegments().get(2);
+		X12Segment loop2100a = claim.getInterchangeControlList().get(0).getFunctionalGroupEnvelopes()
+				.get(0).getTransactionSetEnvelopes().get(0).getSegments().get(2);
 		payerCode = loop2100a.getElements()[9];
 		return payerCode;
 	}
 	
 	private void setPayerCode(X12Message claim, String payerCode) {
-		X12Segment loop2100a = claim.getInterchangeControlList().get(0).getFunctionalGroupEnvelopes().get(0).getTransactionSetEnvelopes().get(0).getSegments().get(2);
+		X12Segment loop2100a = claim.getInterchangeControlList().get(0).getFunctionalGroupEnvelopes()
+				.get(0).getTransactionSetEnvelopes().get(0).getSegments().get(2);
 		loop2100a.getElements()[9] = payerCode;
 	}
 	
@@ -96,5 +101,46 @@ public class ClaimStatus {
 		}
 	
 		return alveoPayerCode;
+	}
+	
+	private String postInquiryToEmdeon(String claimStatusInquiry) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			URL url = new URL("http://localhost:8080/Claims/api/test/echo");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "text/plain");
+			
+			OutputStream os = conn.getOutputStream();
+			os.write(claimStatusInquiry.getBytes());
+			os.flush();
+			
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					throw new RuntimeException("Failed : HTTP error code : "
+						+ conn.getResponseCode());
+			}
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+						(conn.getInputStream())));
+			
+			String output;
+			System.out.println("Output from Server .... \n");
+			while ((output = br.readLine()) != null) {
+					System.out.println(output);
+					sb.append(output);
+			}
+		
+			conn.disconnect();
+		
+		} catch (MalformedURLException e) {
+		
+			e.printStackTrace();
+		
+		} catch (IOException e) {
+			  e.printStackTrace();
+		}
+		
+		return sb.toString();
 	}
 }

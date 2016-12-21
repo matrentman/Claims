@@ -47,7 +47,7 @@ public class ClaimStatusTest {
 		
 		assertNotNull(response);
 		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
-		assertTrue(response.getEntity().toString().contains("[Missmatched segment: ISA/IEA]"));
+		assertTrue(response.getEntity().toString().contains("[Mismatched segment: ISA/IEA]"));
 	}
 	
 	@Test
@@ -57,7 +57,7 @@ public class ClaimStatusTest {
 		
 		assertNotNull(response);
 		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
-		assertTrue(response.getEntity().toString().contains("[Missmatched segment: GS/GE]"));
+		assertTrue(response.getEntity().toString().contains("[Mismatched segment: GS/GE]"));
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ public class ClaimStatusTest {
 		
 		assertNotNull(response);
 		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
-		assertTrue(response.getEntity().toString().contains("[Missmatched segment: GS/GE]"));
+		assertTrue(response.getEntity().toString().contains("[Mismatched segment: GS/GE]"));
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ public class ClaimStatusTest {
 		
 		assertNotNull(response);
 		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
-		assertTrue(response.getEntity().toString().contains("[Missmatched segment: ST/SE]"));
+		assertTrue(response.getEntity().toString().contains("[Mismatched segment: ST/SE]"));
 	}
 	
 	@Test
@@ -87,6 +87,6 @@ public class ClaimStatusTest {
 		
 		assertNotNull(response);
 		assertEquals(response.getStatusInfo().getFamily(), Response.Status.Family.CLIENT_ERROR);
-		assertTrue(response.getEntity().toString().contains("[Missmatched segment: ST/SE]"));
+		assertTrue(response.getEntity().toString().contains("[Mismatched segment: ST/SE]"));
 	}
 }
