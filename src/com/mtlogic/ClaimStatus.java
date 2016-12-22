@@ -8,7 +8,6 @@ import javax.ws.rs.core.Response;
 
 import org.json.JSONException;
 
-import com.mtlogic.x12.X12Message;
 import com.mtlogic.x12.exception.InvalidX12MessageException;
 
 @Path("/claim")
