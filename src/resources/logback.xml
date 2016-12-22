@@ -10,5 +10,6 @@
      
     <root level="TRACE">
         <appender-ref ref="fileAppender" />
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>
